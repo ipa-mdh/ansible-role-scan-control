@@ -1,0 +1,28 @@
+---
+# defaults file for scanControl
+
+temp_path: /tmp
+
+aravis_version_major: 0
+aravis_version_minor: 6
+aravis_version_patch: 4
+
+scanControl_version_major: 0
+scanControl_version_minor: 2
+scanControl_version_patch: 6
+
+
+
+aravis_src: aravis-{{ aravis_version_major }}.{{ aravis_version_minor }}.{{ aravis_version_patch }}.tar.xz
+aravis_filename_stem: aravis-{{ aravis_version_major }}.{{ aravis_version_minor }}.{{ aravis_version_patch }}
+aravis_filename: "{{ aravis_filename_stem }}.tar.xz"
+aravis_folder_path: "{{ temp_path }}/{{ aravis_filename_stem }}"
+aravis_pkgname: "aravis-{{ aravis_version_major }}.{{ aravis_version_minor }}"
+aravis_requires: "libglib2.0-dev, libxml2-dev"
+
+scanControl_src: scanCONTROL-Linux-SDK-{{ scanControl_version_major }}-{{ scanControl_version_minor }}-{{ scanControl_version_patch }}.zip
+scanControl_filename_stem: "scanCONTROL Linux SDK {{ scanControl_version_major }}.{{ scanControl_version_minor }}.{{ scanControl_version_patch }}"
+scanControl_folder_path: "{{ temp_path }}/{{ scanControl_filename_stem }}"
+
+scanControl_libmescan_folder_path: "{{ scanControl_folder_path }}/libmescan"
+scanControl_libllt_folder_path: "{{ scanControl_folder_path }}/libllt"

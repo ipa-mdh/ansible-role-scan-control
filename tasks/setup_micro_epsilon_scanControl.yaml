@@ -1,0 +1,73 @@
+---
+
+- name: scanControl - Install dependencies
+  become: true
+  apt:
+    pkg:
+      - intltool
+      - checkinstall
+      - build-essential
+      - autotools-dev
+      - automake
+      - intltool
+      - libtool
+      - gtk-doc-tools
+      - libxml2-dev
+      - libglib2.0-dev
+      - meson
+      - ninja-build
+    state: latest
+
+- name: scanControl - Checking scanControl is already downloaded
+  stat:
+    path: "/tmp/{{ scanControl_folder_path }}"
+  register: file_data
+
+- name: scanControl - unarchive
+  unarchive:
+    src: "{{ scanControl_src }}"
+    dest: "{{ temp_path }}"
+  when: not file_data.stat.exists
+
+- name: scanControl - libmescan build and install
+  block:
+    - name: scanControl - libmescan - meson
+      raw: cd "{{ scanControl_libmescan_folder_path }}" && meson builddir
+
+    - name: scanControl - libmescan - ninja
+      become: true
+      raw: cd "{{ scanControl_libmescan_folder_path }}/builddir" && ninja
+
+    - name: scanControl - libmescan - ninja install
+      become: true
+      raw: cd "{{ scanControl_libmescan_folder_path }}/builddir" && ninja install
+
+    - name: scanControl - libmescan - ldconfig
+      become: true
+      raw: cd "{{ scanControl_libmescan_folder_path }}/builddir" && ldconfig
+
+- name: scanControl - libllt build and install
+  block:
+    - name: scanControl - libllt - meson
+      raw: cd "{{ scanControl_libllt_folder_path }}" && meson builddir
+
+    - name: scanControl - libllt - ninja
+      become: true
+      raw: cd "{{ scanControl_libllt_folder_path }}/builddir" && ninja
+
+    - name: scanControl - libllt - ninja install
+      become: true
+      raw: cd "{{ scanControl_libllt_folder_path }}/builddir" && ninja install
+
+    - name: scanControl - libllt - ldconfig
+      become: true
+      raw: cd "{{ scanControl_libllt_folder_path }}/builddir" && ldconfig
+
+- name: Install libraries for usage in python
+  become: true
+  copy: 
+    src: "{{ scanControl_folder_path }}/python_bindings/pylinllt"
+    # dest: "~/.local/lib/python3.8/site-packages"
+    dest: "/usr/local/lib/python3.8/dist-packages"
+    directory_mode: yes
+    remote_src: yes

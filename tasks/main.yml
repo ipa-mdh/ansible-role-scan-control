@@ -1,0 +1,4 @@
+---
+# tasks file for scanControl
+- include_tasks: setup_aravis.yaml
+- include_tasks: setup_micro_epsilon_scanControl.yaml

@@ -1,0 +1,53 @@
+---
+
+- name: aravis - Install intltool and checkinstall
+  become: true
+  apt:
+    pkg:
+      - intltool
+      - checkinstall
+      - libglib2.0-dev
+      - libxml2-dev
+    state: latest
+
+- name: aravis - Checking aravis is already downloaded
+  stat:
+    path: "{{ temp_path }}/{{ aravis_filename }}"
+  register: file_data
+
+- name: unarchive aravis
+  unarchive:
+    src: "{{ aravis_src }}"
+    dest: "{{ temp_path }}"
+  when: not file_data.stat.exists
+
+- name: aravis - configure
+  raw: cd "{{ aravis_folder_path }}" && ./configure
+
+# - name: aravis make
+#   become: true
+#   raw: make --directory="{{ aravis_folder_path }}"
+
+# - name: aravis make install
+#   become: true
+#   raw: make install --directory="{{ aravis_folder_path }}"
+
+- name: aravis - make
+  become: true
+  community.general.make:
+    chdir: "{{ aravis_folder_path }}"
+
+#- name: aravis - checkinstall
+#  become: true
+#  raw: cd "{{ aravis_folder_path }}" && checkinstall --pkgname "{{ aravis_pkgname }}" --requires="{{ aravis_requires }}"
+
+
+- name: aravis - make install
+  become: true
+  community.general.make:
+    chdir: "{{ aravis_folder_path }}"
+    target: install
+
+- name: aravis - ldconfig
+  become: true
+  raw: cd "{{ aravis_folder_path }}" && ldconfig
